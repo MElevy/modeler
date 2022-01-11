@@ -15,23 +15,17 @@ class BuildingBlock(Button):
 def update():
     if held_keys['escape']:
         quit()
-    
-    if cam.y < -10:
-        cam.y = 10
 
     if held_keys['space']:
-        cam.y += 5 * time.dt
-    elif held_keys['left shift']:
-        cam.y -= 5 * time.dt
+        cam.y += 7 * time.dt
+    if held_keys['left shift']:
+        cam.y -= 7 * time.dt
 
 app = Ursina(fullscreen=True)
 
 cam = FPC(gravity=0)
-cam.y = 10
+cam.y = 1
 
-for z in range(10):
-    for x in range(10):
-        for y in range(10):
-            block = BuildingBlock(pos=(x - 5, y, z - 5))
+block = BuildingBlock(pos=(0, 0, 0))
 
 app.run()
