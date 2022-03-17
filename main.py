@@ -1,31 +1,29 @@
 from ursina import *
-from ursina.prefabs.first_person_controller import FirstPersonController as FPC
+from utils import BuildingBlock, app, cam
+from utils import update as utils_update
+import utils
+import json
 
-class BuildingBlock(Button):
-    def __init__(self, pos=(0, 0, 0)):
-        super().__init__(parent=scene, position=pos, model='cube', texture='white_cube', color=color.white)
+def load_blocks(json_list):
+    for block_coords in json_list:
+        utils.color_chosen = block_coords[-1]
+        block = BuildingBlock(pos = block_coords[:-1])
+    utils.color_chosen = 1
 
-    def input(self, key):
-        if self.hovered:
-            if key == 'left mouse down':
-                destroy(self)
-            elif key == 'right mouse down':
-                block = BuildingBlock(pos=self.position + mouse.normal)
+def save_blocks():
+    with open('data.json', 'w') as f:
+        f.write(json.dumps(utils.block_list, indent = 4))
 
 def update():
-    if held_keys['escape']:
-        quit()
+    if held_keys['enter']:
+        save_blocks()
+    utils_update()
 
-    if held_keys['space']:
-        cam.y += 7 * time.dt
-    if held_keys['left shift']:
-        cam.y -= 7 * time.dt
+if __name__ == '__main__':
+    try:
+        with open('data.json', 'r') as f:
+            load_blocks(json.loads(f.read()))
+    except FileNotFoundError:
+        block = BuildingBlock()
 
-app = Ursina(fullscreen=True)
-
-cam = FPC(gravity=0)
-cam.y = 1
-
-block = BuildingBlock(pos=(0, 0, 0))
-
-app.run()
+    app.run()
